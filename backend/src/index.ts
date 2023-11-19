@@ -1,9 +1,15 @@
-import express from "express";
+import app from "./app.js";
+import { connectToDatabase } from "./db/connection.js";
 
-const app = express();
-
-// middlewares
-app.use(express.json());
+const PORT = process.env.PORT || 5000;
 
 // connections and listeners
-app.listen(5000, () => console.log("Server Open"));
+connectToDatabase()
+  .then(() => {
+    app.listen(PORT, () =>
+      console.log("Server Open and Success Connect Database")
+    );
+  })
+  .catch((err) => {
+    console.log(err);
+  });
