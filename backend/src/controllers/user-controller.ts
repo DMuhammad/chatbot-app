@@ -1,6 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import { hash, compare } from "bcrypt";
 import User from "../models/User.js";
+import { createToken } from "../utils/token-manager.js";
+import { COOKIE_NAME } from "../utils/constant.js";
 
 const getAllUsers = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -27,6 +29,25 @@ const userSignup = async (req: Request, res: Response, next: NextFunction) => {
     });
 
     await user.save();
+    res.clearCookie(COOKIE_NAME, {
+      path: "/",
+      domain: "localhost",
+      httpOnly: true,
+      signed: true,
+    });
+
+    const token = createToken(user._id.toString(), user.email, "7d");
+    const expires = new Date();
+    expires.setDate(expires.getDate() + 7);
+
+    res.cookie(COOKIE_NAME, token, {
+      path: "/",
+      domain: "localhost",
+      httpOnly: true,
+      signed: true,
+      expires,
+    });
+
     return res.status(201).json({
       message: "OK",
       id: user._id,
@@ -48,7 +69,29 @@ const userLogin = async (req: Request, res: Response, next: NextFunction) => {
 
     if (!isPasswordCorrect) return res.status(403).send("Incorrect Password");
 
-    return res.status(200).json({ message: "OK", id: user._id });
+    res.clearCookie(COOKIE_NAME, {
+      path: "/",
+      domain: "localhost",
+      httpOnly: true,
+      signed: true,
+    });
+
+    const token = createToken(user._id.toString(), user.email, "7d");
+    const expires = new Date();
+    expires.setDate(expires.getDate() + 7);
+
+    res.cookie(COOKIE_NAME, token, {
+      path: "/",
+      domain: "localhost",
+      httpOnly: true,
+      signed: true,
+      expires,
+    });
+
+    return res.status(200).json({
+      message: "OK",
+      id: user._id,
+    });
   } catch (error) {
     console.log(error);
     return res.status(400).json({ message: error.message });
