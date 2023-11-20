@@ -22,8 +22,8 @@ type UserAuth = {
 const AuthContext = createContext<UserAuth | null>(null);
 
 const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setuser] = useState<User | null>(null);
-  const [isLoggedIn, setisLoggedIn] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {}, []);
 
@@ -39,7 +39,9 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
     logout,
   };
 
-  return <AuthContext.Provider value={value}></AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={value}> {children} </AuthContext.Provider>
+  );
 };
 
 const UseAuth = () => useContext(AuthContext);
