@@ -50,7 +50,8 @@ const userSignup = async (req: Request, res: Response, next: NextFunction) => {
 
     return res.status(201).json({
       message: "OK",
-      id: user._id,
+      name: user.name,
+      email: user.email,
     });
   } catch (error) {
     console.log(error);
@@ -90,7 +91,8 @@ const userLogin = async (req: Request, res: Response, next: NextFunction) => {
 
     return res.status(200).json({
       message: "OK",
-      id: user._id,
+      name: user.name,
+      email: user.email,
     });
   } catch (error) {
     console.log(error);
