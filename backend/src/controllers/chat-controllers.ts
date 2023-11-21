@@ -21,7 +21,6 @@ const generateChatCompletion = async (
       role,
       content,
     })) as ChatCompletionRequestMessage[];
-    console.log(chats);
 
     chats.push({ role: "user", content: message });
     user.chats.push({ role: "user", content: message });

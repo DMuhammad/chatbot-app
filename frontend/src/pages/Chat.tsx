@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import { useRef, useState } from "react";
 import {
   Avatar,
   Box,
@@ -10,13 +10,34 @@ import {
 import { IoMdSend } from "react-icons/io";
 import { UseAuth } from "../context/AuthContext";
 import ChatItem from "../components/Chat/ChatItem";
+import { sendChatRequest } from "../helpers/api-communicator";
+
+type Message = {
+  role: "user" | "assistant";
+  content: string;
+};
 
 const Chat = () => {
   const auth = UseAuth();
   const inputRef = useRef<HTMLInputElement | null>(null);
-  const [chatMessages, setChatMessages] = useState([]);
+  const [chatMessages, setChatMessages] = useState<Message[]>([]);
+
   const handleSubmit = async () => {
-    console.log(inputRef.current?.value);
+    const content = inputRef.current?.value as string;
+
+    if (inputRef && inputRef.current) {
+      inputRef.current.value = "";
+    }
+
+    const newMessage: Message = { role: "user", content };
+    setChatMessages((prev) => [...prev, newMessage]);
+    console.log("before");
+    console.log(chatMessages);
+
+    const chatData = await sendChatRequest(content);
+    setChatMessages([...chatData.chats]);
+    console.log("after");
+    console.log(chatMessages);
   };
 
   return (
@@ -131,7 +152,6 @@ const Chat = () => {
           }}
         >
           {chatMessages.map((chat, index) => (
-            // @ts-ignore
             <ChatItem content={chat.content} role={chat.role} key={index} />
           ))}
         </Box>
