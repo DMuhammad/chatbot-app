@@ -1,4 +1,5 @@
-import { useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Avatar,
   Box,
@@ -23,6 +24,7 @@ type Message = {
 };
 
 const Chat = () => {
+  const navigate = useNavigate();
   const auth = UseAuth();
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [chatMessages, setChatMessages] = useState<Message[]>([]);
@@ -65,6 +67,12 @@ const Chat = () => {
           console.log(err);
           toast.error("Failed Loaded Chats", { id: "loadchats" });
         });
+    }
+  }, [auth]);
+
+  useEffect(() => {
+    if (!auth?.user) {
+      return navigate("/login");
     }
   }, [auth]);
 
