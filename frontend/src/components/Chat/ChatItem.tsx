@@ -1,8 +1,34 @@
-import React from "react";
 import { UseAuth } from "../../context/AuthContext";
 import { Avatar, Box, Typography } from "@mui/material";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { coldarkDark } from "react-syntax-highlighter/dist/esm/styles/prism";
+
+function extractCodeFromString(message: string) {
+  if (message.includes("```")) {
+    const blocks = message.split("```");
+    return blocks;
+  }
+}
+
+function isCodeBlock(str: string) {
+  if (
+    str.includes("=") ||
+    str.includes(";") ||
+    str.includes("[") ||
+    str.includes("]") ||
+    str.includes("{") ||
+    str.includes("}") ||
+    str.includes("#") ||
+    str.includes("//")
+  ) {
+    return true;
+  }
+
+  return false;
+}
 
 const ChatItem = ({ role, content }: { role: string; content: string }) => {
+  const messageBlocks = extractCodeFromString(content);
   const auth = UseAuth();
   return role === "assistant" ? (
     <Box
@@ -19,7 +45,23 @@ const ChatItem = ({ role, content }: { role: string; content: string }) => {
         <img src="openai.png" alt="openai" width={"30px"} />
       </Avatar>
       <Box>
-        <Typography sx={{ fontSize: "20px" }}>{content}</Typography>
+        {!messageBlocks && (
+          <Typography sx={{ fontSize: "20px" }}>{content}</Typography>
+        )}
+        {messageBlocks &&
+          messageBlocks.length &&
+          messageBlocks.map((block) =>
+            isCodeBlock(block) ? (
+              <SyntaxHighlighter
+                style={coldarkDark}
+                language={block.split(" ")[0].split("\n")[0]}
+              >
+                {block}
+              </SyntaxHighlighter>
+            ) : (
+              <Typography sx={{ fontSize: "20px" }}>{block}</Typography>
+            )
+          )}
       </Box>
     </Box>
   ) : (
@@ -37,7 +79,20 @@ const ChatItem = ({ role, content }: { role: string; content: string }) => {
         {auth?.user?.name.split(" ")[1][0]}
       </Avatar>
       <Box>
-        <Typography sx={{ fontSize: "20px" }}>{content}</Typography>
+        {!messageBlocks && (
+          <Typography sx={{ fontSize: "20px" }}>{content}</Typography>
+        )}
+        {messageBlocks &&
+          messageBlocks.length &&
+          messageBlocks.map((block) =>
+            isCodeBlock(block) ? (
+              <SyntaxHighlighter style={coldarkDark} language="javascript">
+                {block}
+              </SyntaxHighlighter>
+            ) : (
+              <Typography sx={{ fontSize: "20px" }}>{block}</Typography>
+            )
+          )}
       </Box>
     </Box>
   );

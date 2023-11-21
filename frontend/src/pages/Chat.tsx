@@ -31,13 +31,9 @@ const Chat = () => {
 
     const newMessage: Message = { role: "user", content };
     setChatMessages((prev) => [...prev, newMessage]);
-    console.log("before");
-    console.log(chatMessages);
 
     const chatData = await sendChatRequest(content);
     setChatMessages([...chatData.chats]);
-    console.log("after");
-    console.log(chatMessages);
   };
 
   return (
