@@ -17,7 +17,7 @@ const getAllUsers = async (req: Request, res: Response, next: NextFunction) => {
 const userSignup = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { name, email, password } = req.body;
-    const existingUser = User.findOne({ email });
+    const existingUser = await User.findOne({ email });
 
     if (existingUser) return res.status(401).send("User already registered");
 
@@ -34,18 +34,6 @@ const userSignup = async (req: Request, res: Response, next: NextFunction) => {
       domain: "localhost",
       httpOnly: true,
       signed: true,
-    });
-
-    const token = createToken(user._id.toString(), user.email, "7d");
-    const expires = new Date();
-    expires.setDate(expires.getDate() + 7);
-
-    res.cookie(COOKIE_NAME, token, {
-      path: "/",
-      domain: "localhost",
-      httpOnly: true,
-      signed: true,
-      expires,
     });
 
     return res.status(201).json({
