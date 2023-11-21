@@ -72,6 +72,7 @@ const ChatItem = ({ role, content }: { role: string; content: string }) => {
         bgcolor: "#004d56",
         gap: 2,
         borderRadius: 2,
+        my: 2,
       }}
     >
       <Avatar sx={{ ml: "0", bgcolor: "black", color: "white" }}>
@@ -86,7 +87,10 @@ const ChatItem = ({ role, content }: { role: string; content: string }) => {
           messageBlocks.length &&
           messageBlocks.map((block) =>
             isCodeBlock(block) ? (
-              <SyntaxHighlighter style={coldarkDark} language="javascript">
+              <SyntaxHighlighter
+                style={coldarkDark}
+                language={block.split(" ")[0].split("\n")[0]}
+              >
                 {block}
               </SyntaxHighlighter>
             ) : (
