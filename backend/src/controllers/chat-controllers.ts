@@ -42,4 +42,27 @@ const generateChatCompletion = async (
   }
 };
 
-export { generateChatCompletion };
+const sendUserChats = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const user = await User.findById(res.locals.jwtData.id);
+    if (!user)
+      return res.status(401).send("User not registered or Token malfunctioned");
+
+    if (user._id.toString() !== res.locals.jwtData.id)
+      return res.status(401).send("Permissions didn't match");
+
+    return res.status(200).json({
+      message: "OK",
+      chats: user.chats,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(400).json({ message: error.message });
+  }
+};
+
+export { generateChatCompletion, sendUserChats };
